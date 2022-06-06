@@ -1,7 +1,4 @@
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-
-dotenv.config();
+const mongoClient = require("./mongoClient");
 
 process.on("uncaughtException", (err) => {
   console.log(err.name, err.message);
@@ -11,22 +8,10 @@ process.on("uncaughtException", (err) => {
 
 const app = require("./app");
 
-const DB_URL = process.env.DATABASE_URL.replace(
-  "<PASSWORD>",
-  process.env.DATABASE_PASSWORD
-);
-
-mongoose
-  .connect(DB_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("DB connection established ");
-  });
-
 const port = process.env.PORT || 3100;
-const server = app.listen(port, () => {
+const server = app.listen(port, async () => {
+  await mongoClient;
+  console.log("Connect to DB");
   console.log(`App is running at ${port}`);
 });
 
