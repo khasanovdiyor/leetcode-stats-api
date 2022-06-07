@@ -24,7 +24,7 @@ app.get("/profiles", async (req, res, next) => {
     const profileStats = latestStats.find(
       (stat) => stat.username === profile.username
     );
-    profile.missedDaysCount = profileStats.missedDaysCount;
+    profile.missedDaysCount = profileStats?.missedDaysCount | 0;
     return profile;
   });
 
@@ -61,7 +61,7 @@ cron.schedule("55 23 * * *", async function () {
           $gte: new Date(new Date(yesterday).setHours(0, 0, 0)),
           $lt: new Date(new Date(yesterday).setHours(23, 59, 59)),
         },
-      });
+      }).sort({ createdAt: -1 });
 
       if (ProfileStatsOfYesterday?.total !== undefined) {
         const todaysSolvedCount = todaysTotal - ProfileStatsOfYesterday.total;
